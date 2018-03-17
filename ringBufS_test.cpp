@@ -70,11 +70,11 @@ int main(int argc, char* argv[])
       pthread_create( &thread_arr[i],NULL,&thread_func, (void*)&void_ring);
   }
 
+  pthread_spin_destroy(&spin_lock); // why putting it after the joins messes it all up??
   for (int i = 0; i < 3; i++) {
       pthread_join(thread_arr[i],NULL);
   }
 
-  pthread_spin_destroy(&spin_lock);
 
   
   return 0;
