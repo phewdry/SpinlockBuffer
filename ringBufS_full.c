@@ -6,5 +6,7 @@
 
 int ringBufS_full (ringBufS *_this)
 {
-    return (_this->count>=RBUF_SIZE);
+
+    // return 1 if true , 0 if false 
+    return (_this->count >= RBUF_SIZE);
 }

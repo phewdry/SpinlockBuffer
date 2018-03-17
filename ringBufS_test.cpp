@@ -12,8 +12,10 @@ static const int thread_ct = 2;
 
 void* thread_func(void * args) {
   ringBufS *my_ringBuffer = (ringBufS*)args; 
-  my_ringBuffer->buf = nullptr;
-
+  for (int i = 0; i < RBUF_SIZE; i++) {
+      my_ringBuffer->buf[i] = 0;
+  }
+  
   int my_status, i;
   printf("\nfifo empty status = %d", ringBufS_empty (my_ringBuffer));
 
