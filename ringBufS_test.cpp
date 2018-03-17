@@ -7,11 +7,17 @@
 #include  "ringBufS.h"
 #include <stdint.h>
 #include <cstring>
+#include "pthread_spinlock_t.h"
+
 
 static const int thread_ct = 2;
+int pshared, spin_ret;
+
+pthread_spinlock_t spin_lock;
 
 void* thread_func(void * args) {
-  ringBufS *my_ringBuffer = (ringBufS*)args; 
+  pthread_spin_lock(&spin_lock);
+    ringBufS *my_ringBuffer = (ringBufS*)args; 
   for (int i = 0; i < RBUF_SIZE; i++) {
       my_ringBuffer->buf[i] = 0;
   }
@@ -45,29 +51,30 @@ void* thread_func(void * args) {
   printf("\nfifo empty status = %d", ringBufS_empty (my_ringBuffer));
 
   putchar ('\n');
-
-
-
+  pthread_spin_unlock(&spin_lock);
 }
 
 
 int main(int argc, char* argv[])
 {
-  ringBufS my_ringBuffer;
+
+    pthread_spin_init(&spin_lock, PTHREAD_PROCESS_PRIVATE);
+    ringBufS my_ringBuffer;
   ringBufS_init (&my_ringBuffer);
-  struct thread_data data_arr[2];
-  pthread_t thread_arr[2];
+  struct thread_data data_arr[3];
+  pthread_t thread_arr[3];
   void *void_ring = std::memcpy(&void_ring ,&my_ringBuffer,sizeof(void_ring));
 
-  for (int i = 0; i < 2; i++) {
+  for (int i = 0; i < 3; i++) {
       data_arr[i].id  = i;
       pthread_create( &thread_arr[i],NULL,&thread_func, (void*)&void_ring);
   }
 
-  for (int i = 0; i < 2; i++) {
+  for (int i = 0; i < 3; i++) {
       pthread_join(thread_arr[i],NULL);
   }
 
+  pthread_spin_destroy(&spin_lock);
 
   
   return 0;
