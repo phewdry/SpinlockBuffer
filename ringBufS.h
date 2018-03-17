@@ -3,7 +3,7 @@
 /****************************************************************************/
 /*    FILE: ringBufS.h                                                      */
 /****************************************************************************/
-    #define RBUF_SIZE    256
+    #define RBUF_SIZE   256
 
 
     typedef struct  ringBufS
@@ -13,6 +13,10 @@
       int tail;
       int count;
     } ringBufS;
+
+   struct thread_data{
+       int id;
+   }; 
 
     #ifdef  __cplusplus
       extern  "C" {

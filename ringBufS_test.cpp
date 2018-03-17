@@ -5,8 +5,14 @@
 #include  <stdio.h>
 #include <pthread.h>
 #include  "ringBufS.h"
+#include <stdint.h>
+#include <cstring>
 
-void thread_func(ringBufS *my_ringBuffer) {
+static const int thread_ct = 2;
+
+void* thread_func(void * args) {
+  ringBufS *my_ringBuffer = (ringBufS*)args; 
+  my_ringBuffer->buf = nullptr;
 
   int my_status, i;
   printf("\nfifo empty status = %d", ringBufS_empty (my_ringBuffer));
@@ -47,8 +53,20 @@ int main(int argc, char* argv[])
 {
   ringBufS my_ringBuffer;
   ringBufS_init (&my_ringBuffer);
+  struct thread_data data_arr[2];
+  pthread_t thread_arr[2];
+  void *void_ring = std::memcpy(&void_ring ,&my_ringBuffer,sizeof(void_ring));
 
-  thread_func(&my_ringBuffer);
+  for (int i = 0; i < 2; i++) {
+      data_arr[i].id  = i;
+      pthread_create( &thread_arr[i],NULL,&thread_func, (void*)&void_ring);
+  }
+
+  for (int i = 0; i < 2; i++) {
+      pthread_join(thread_arr[i],NULL);
+  }
+
+
   
   return 0;
 }
